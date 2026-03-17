@@ -1,107 +1,12 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  background: #0d0d0d;
-  color: #e0e0e0;
-  font-family: system-ui, sans-serif;
-  min-height: 100vh;
-  padding: 20px;
+  background:#0d0d0d;
+  color:#eee;
+  font-family:system-ui, sans-serif;
 }
 
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 1.2rem;
-  font-size: 2.1rem;
-  letter-spacing: -0.5px;
-}
-
-.status-bar {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
-}
-
-#status {
-  font-weight: bold;
-  padding: 0.3em 0.8em;
-  border-radius: 6px;
-}
-
-.status-ok    { background: #1a5; color: white; }
-.status-error { background: #a22; color: white; }
-.status-off   { background: #444; color: #aaa; }
-
-.input-row {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-button {
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.13s;
-}
-
-#btn-start {
-  background: #0a5;
-  color: white;
-}
-
-#btn-start:hover { background: #0c6; }
-
-#btn-stop {
-  background: #444;
-  color: #ccc;
-}
-
-#btn-stop:hover:not(:disabled) {
-  background: #555;
-}
-
-#btn-stop:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.video-area {
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 10px;
-  padding: 20px;
-  min-height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-video {
-  max-width: 100%;
-  max-height: 80vh;
-  border-radius: 6px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-  display: none;
-}
-
-#placeholder {
-  color: #555;
-  font-size: 1.3rem;
-  user-select: none;
-}
+.container { max-width:800px; margin:0 auto; padding:20px; }
+h1 { text-align:center; margin-bottom:1rem; }
+.status-bar { text-align:center; margin-bottom:1rem; }
+.image-area { position:relative; width:100%; max-width:800px; height:450px; margin:0 auto; background:#111; border:1px solid #222; border-radius:10px; }
+canvas { width:100%; height:100%; display:block; }
+#placeholder { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#555; font-size:1.2rem; user-select:none; }

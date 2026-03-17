@@ -1,76 +1,40 @@
 const statusEl = document.getElementById('status');
-const videoEl = document.getElementById('video');
+const canvas = document.getElementById('canvas');
 const placeholder = document.getElementById('placeholder');
-const btnStart = document.getElementById('btn-start');
-const btnStop = document.getElementById('btn-stop');
+const ctx = canvas.getContext('2d');
 
-let pc;        // PeerConnection
-let localStream;
+let polling = null;
 
 // Atualiza status
 function setStatus(text, className='status-off') {
-  statusEl.textContent = text;
-  statusEl.className = className;
+    statusEl.textContent = text;
+    statusEl.className = className;
 }
 
-// Inicia transmissão usando WebRTC
-async function startTransmission() {
-  try {
-    // Pede permissão para capturar a tela
-    localStream = await navigator.mediaDevices.getDisplayMedia({
-      video: { frameRate: 20 },
-      audio: false
-    });
+// Função que busca a última imagem do servidor
+async function fetchFrame() {
+    try {
+        const res = await fetch('https://ryzeautojoiner.vercel.app/latest'); // endpoint que recebe o frame
+        if(!res.ok) throw new Error('Erro ao buscar frame');
+        const data = await res.json(); // espera { "img_base_64": "..." }
+        if(!data.img_base_64) return;
 
-    videoEl.srcObject = localStream;
-    videoEl.style.display = 'block';
-    placeholder.style.display = 'none';
-
-    // Cria conexão WebRTC
-    pc = new RTCPeerConnection();
-
-    // Adiciona stream local
-    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-    // Simula envio: no seu caso você precisaria de um servidor que recebe o offer e envia back a resposta
-    pc.onicecandidate = e => {
-      if (e.candidate) {
-        // aqui normalmente enviaria para o servidor de sinalização
-      }
-    };
-
-    // Criar offer
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    // Aqui você enviaria `offer` para o servidor de sinalização e receberia `answer`
-    // Para teste local, o próprio navegador pode criar loopback (não recomendado para produção)
-    
-    setStatus('Transmitindo', 'status-ok');
-    btnStart.disabled = true;
-    btnStop.disabled = false;
-  } catch (err) {
-    console.error(err);
-    setStatus('Erro na transmissão', 'status-error');
-  }
+        const img = new Image();
+        img.src = `data:image/jpeg;base64,${data.img_base_64}`;
+        img.onload = () => {
+            placeholder.style.display = 'none';
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+    } catch(e) {
+        console.error(e);
+        setStatus('Erro ao buscar frame', 'status-error');
+    }
 }
 
-// Para transmissão
-function stopTransmission() {
-  if (localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = null;
-  }
-  if (pc) {
-    pc.close();
-    pc = null;
-  }
-  videoEl.style.display = 'none';
-  placeholder.style.display = 'block';
-  setStatus('Desconectado', 'status-off');
-  btnStart.disabled = false;
-  btnStop.disabled = true;
+// Start polling a 5 FPS
+function startPolling() {
+    setStatus('Conectado', 'status-ok');
+    polling = setInterval(fetchFrame, 200); // 5 FPS = 200ms
 }
 
-btnStart.onclick = startTransmission;
-btnStop.onclick = stopTransmission;
+startPolling();
